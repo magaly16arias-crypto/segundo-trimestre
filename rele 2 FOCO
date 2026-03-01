@@ -1,0 +1,13 @@
+#define RELE 7
+
+void setup() {
+  pinMode(RELE, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(RELE, HIGH);  // Activa relé (enciende foco)
+  delay(3000);
+
+  digitalWrite(RELE, LOW);   // Desactiva relé (apaga foco)
+  delay(3000);
+}
