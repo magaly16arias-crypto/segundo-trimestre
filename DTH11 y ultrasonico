@@ -1,0 +1,51 @@
+#define THINGER_SERIAL_DEBUG
+#include <ThingerESP8266.h>
+
+#define USERNAME "Magaly_Arias"
+#define DEVICE_ID "humy ultraiaS"
+#define DEVICE_CREDENTIAL "123456"
+
+#define SSID "CasaMagalyWiFi"
+#define SSID_PASSWORD "Magaly2026"
+
+// Pines ultrasónico
+#define TRIG D5
+#define ECHO D6
+
+// Pin humedad
+#define HUMEDAD A0
+
+ThingerESP8266 thing(USERNAME, DEVICE_ID, DEVICE_CREDENTIAL);
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+
+  thing.add_wifi(SSID, SSID_PASSWORD);
+
+  // 📏 Recurso distancia
+  thing["distancia"] >> [](pson &out){
+    digitalWrite(TRIG, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG, LOW);
+
+    long duracion = pulseIn(ECHO, HIGH);
+    float distancia = duracion * 0.034 / 2;
+
+    out = distancia;
+  };
+
+  // 🌱 Recurso humedad
+  thing["humedad"] >> [](pson &out){
+    int valor = analogRead(HUMEDAD);
+    out = valor;
+  };
+}
+
+void loop() {
+  thing.handle();
+}
