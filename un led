@@ -1,5 +1,4 @@
 #define THINGER_SERIAL_DEBUG
-
 #include <ThingerESP8266.h>
 
 #define USERNAME "Mgaly_Arias"
