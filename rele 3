@@ -1,0 +1,29 @@
+#define THINGER_SERIAL_DEBUG
+#include <ThingerESP8266.h>
+
+#define USERNAME "Magaly_Arias"
+#define DEVICE_ID "focoiaS"
+#define DEVICE_CREDENTIAL "123456"
+
+#define SSID "CasaMagalyWiFi"
+#define SSID_PASSWORD "Magaly2026"
+
+#define RELE D1
+
+ThingerESP8266 thing(USERNAME, DEVICE_ID, DEVICE_CREDENTIAL);
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(RELE, OUTPUT);
+
+  thing.add_wifi(SSID, SSID_PASSWORD);
+
+  // Recurso para controlar el foco
+  thing["foco"] << [](pson &in){
+    digitalWrite(RELE, in ? HIGH : LOW);
+  };
+}
+
+void loop() {
+  thing.handle();
+}
