@@ -1,0 +1,29 @@
+#define THINGER_SERIAL_DEBUG
+#include <ThingerESP32.h>
+
+#define USERNAME "Magaly--_"
+#define DEVICE_ID "Magaly_AriaS"
+#define DEVICE_CREDENTIAL "123456"
+
+#define SSID "CasaMagalyWiFi"
+#define SSID_PASSWORD "Magaly2026"
+
+#define LED D2
+
+ThingerESP8266 thing(USERNAME, DEVICE_ID, DEVICE_CREDENTIAL);
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, LOW);
+
+  thing.add_wifi(SSID, SSID_PASSWORD);
+
+  thing["led"] << [](pson &in){
+    digitalWrite(LED, in ? HIGH : LOW);
+  };
+}
+
+void loop() {
+  thing.handle();
+}
