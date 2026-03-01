@@ -1,0 +1,66 @@
+#include <ESP8266WiFi.h>
+
+const char* ssid = "CasaMagalyWiFi";
+const char* password = "Magaly2026";
+
+WiFiServer server(80);
+
+#define RELE1 D1
+#define RELE2 D2
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(RELE1, OUTPUT);
+  pinMode(RELE2, OUTPUT);
+
+  digitalWrite(RELE1, LOW);
+  digitalWrite(RELE2, LOW);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi conectado");
+  Serial.println(WiFi.localIP());
+
+  server.begin();
+}
+
+void loop() {
+  WiFiClient client = server.available();
+  if (!client) {
+    return;
+  }
+
+  String request = client.readStringUntil('\r');
+  client.flush();
+
+  if (request.indexOf("/FOCO1=ON") != -1) {
+    digitalWrite(RELE1, HIGH);
+  }
+  if (request.indexOf("/FOCO1=OFF") != -1) {
+    digitalWrite(RELE1, LOW);
+  }
+  if (request.indexOf("/FOCO2=ON") != -1) {
+    digitalWrite(RELE2, HIGH);
+  }
+  if (request.indexOf("/FOCO2=OFF") != -1) {
+    digitalWrite(RELE2, LOW);
+  }
+
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println("");
+  client.println("<h1>Control de Focos</h1>");
+  client.println("<a href=\"/FOCO1=ON\"><button>Encender Foco 1</button></a>");
+  client.println("<a href=\"/FOCO1=OFF\"><button>Apagar Foco 1</button></a><br><br>");
+  client.println("<a href=\"/FOCO2=ON\"><button>Encender Foco 2</button></a>");
+  client.println("<a href=\"/FOCO2=OFF\"><button>Apagar Foco 2</button></a>");
+
+  delay(1);
+}
